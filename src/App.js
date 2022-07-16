@@ -5,6 +5,7 @@ import {BrowserRouter,Routes,Route} from 'react-router-dom';
 import Menu from './components/Menu';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
+import Video from './pages/Video';
 
 // styled
 const Container = styled.div`
@@ -32,6 +33,9 @@ function App() {
               <Routes>
                 <Route path='/'>
                   <Route index element={<Home/>} />
+                  <Route path="video">
+                    <Route path=":id" element={<Video />} />
+                  </Route>
                 </Route>
               </Routes>
             </Wrapper>
