@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 import YoutubeLogo from '../img/logo.png';
 import HomeIcon from "@mui/icons-material/Home";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
@@ -82,10 +83,12 @@ const Menu = ({ darkMode, setDarkMode }) => {
     return (
         <Container>
             <Wrapper>
-                <Logo>
-                    <Img src={YoutubeLogo} />
-                    Youtube
-                </Logo>
+                <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+                    <Logo>
+                        <Img src={YoutubeLogo} />
+                        Youtube
+                    </Logo>
+                </Link>
                 <Item>
                     <HomeIcon />
                     Home
@@ -110,10 +113,12 @@ const Menu = ({ darkMode, setDarkMode }) => {
                 <Hr />
                 <Login>
                     Sign in to like videos, comment, and subscribe.
-                    <Button>
-                        <AccountCircleOutlinedIcon />
-                        SIGN IN
-                    </Button>
+                    <Link to="/" style={{ textDecoration: "none"}}>
+                        <Button>
+                            <AccountCircleOutlinedIcon />
+                            SIGN IN
+                        </Button>
+                    </Link>
                 </Login>
                 <Hr />
                 <Title>BEST OF LAMATUBE</Title>
