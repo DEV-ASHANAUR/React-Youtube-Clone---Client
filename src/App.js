@@ -6,6 +6,7 @@ import Menu from './components/Menu';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Video from './pages/Video';
+import SignIn from './pages/SignIn';
 
 // styled
 const Container = styled.div`
@@ -33,6 +34,7 @@ function App() {
               <Routes>
                 <Route path='/'>
                   <Route index element={<Home/>} />
+                  <Route path="signin" element={<SignIn />} />
                   <Route path="video">
                     <Route path=":id" element={<Video />} />
                   </Route>

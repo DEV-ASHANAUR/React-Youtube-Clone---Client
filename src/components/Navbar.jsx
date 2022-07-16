@@ -62,7 +62,7 @@ const Navbar = ({darkMode}) => {
                     <Input placeholder='Search' />
                     <SearchOutlinedIcon style={{color:`${darkMode? 'white':'#000'}`,cursor:"pointer"}} />
                 </Search>
-                <Link to="/" style={{textDecoration:"none"}}>
+                <Link to="signin" style={{textDecoration:"none"}}>
                     <Button>
                         <AccountCircleOutlinedIcon />
                         SIGN IN
