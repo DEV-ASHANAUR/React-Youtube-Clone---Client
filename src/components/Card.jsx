@@ -3,16 +3,21 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Conatiner = styled.div`
-    max-width: ${(props) => props.type !== "sm" && "345px"};
-    width: 100%;
+    width: ${(props) => props.type !== "sm" && "345px"};
+    /* width: 100%; */
     margin-bottom: ${(props) => props.type !== "sm" ? "10px" : "45px"};
     cursor:pointer;
     display: ${(props) => props.type === "sm" && "flex"};
     gap: 10px;
+    @media (max-width: 1313px) {
+        max-width: ${(props) => props.type !== "sm" && "345px"};
+        width: 100%;
+    }
 `;
 const Image = styled.img`
     width: 100%;
     height: ${(props) => (props.type === "sm" ? "120px" : "202px")};
+    object-fit: cover;
     background-color: #999;
     flex: 1;
 `;
@@ -52,7 +57,7 @@ const Card = ({ type }) => {
     return (
         <Link to="/video/dfgbvds" style={{ textDecoration: "none" }}>
             <Conatiner type={type}>
-                <Image type={type} src="https://i9.ytimg.com/vi_webp/k3Vfj-e1Ma4/mqdefault.webp?v=6277c159&sqp=CIjm8JUG&rs=AOn4CLDeKmf_vlMC1q9RBEZu-XQApzm6sA" />
+                <Image type={type} src="https://legiit-service.s3.amazonaws.com/e6b231fb2b3929775603d68aba761207/6f2c8ec05be61314ccee5bce008da04c.jpg" />
                 <Details type={type}>
                     <ChannelImage type={type} src="https://yt3.ggpht.com/yti/APfAmoE-Q0ZLJ4vk3vqmV4Kwp0sbrjxLyB8Q4ZgNsiRH=s88-c-k-c0x00ffffff-no-rj-mo" />
                     <Texts>

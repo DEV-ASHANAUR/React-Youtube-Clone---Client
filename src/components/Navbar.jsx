@@ -5,7 +5,7 @@ import YoutubeLogo from '../img/logo.png';
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import MenuIcon from '@mui/icons-material/Menu';
-import { SwitchUnstyled } from '@mui/base';
+// import { SwitchUnstyled } from '@mui/base';
 
 const Container = styled.div`
     position: sticky;
