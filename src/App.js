@@ -22,14 +22,15 @@ const Wrapper = styled.div`
 
 function App() {
   const [darkMode,setDarkMode] = useState(true);
-
+  const [toggle,setTogger] = useState(false);
+  console.log("toggle",toggle);
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <Container>
         <BrowserRouter>
-          <Menu darkMode={darkMode} setDarkMode={setDarkMode} />
+          <Menu darkMode={darkMode} setDarkMode={setDarkMode} toggle={toggle} />
           <Main>
-            <Navbar darkMode={darkMode} />
+            <Navbar darkMode={darkMode} setTogger={setTogger} toggle={toggle} />
             <Wrapper>
               <Routes>
                 <Route path='/'>

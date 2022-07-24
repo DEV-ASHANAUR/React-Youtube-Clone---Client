@@ -11,6 +11,9 @@ import Card from '../components/Card';
 const Container = styled.div`
     display:flex;
     gap:24px;
+    @media (max-width: 767px) {
+        flex-direction: column;
+    }
 `;
 const Content = styled.div`
     flex:5;

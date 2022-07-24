@@ -4,7 +4,9 @@ import Card from '../components/Card';
 
 const Container = styled.div`
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
+  justify-content: center;
+  gap:10px;
   flex-wrap: wrap;
 `;
 const Home = () => {

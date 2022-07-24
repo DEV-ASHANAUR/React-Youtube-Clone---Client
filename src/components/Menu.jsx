@@ -29,6 +29,14 @@ const Container = styled.div`
     font-size:14px;
     position:sticky;
     top:0;
+    @media (max-width: 1041px) {
+        position: absolute;
+        /* left: 100%; */
+        left:${(props) => props.toggle ? "0" : "100%"};
+        height: 100vh
+    }
+    
+    
 `;
 const Wrapper = styled.div`
     padding: 18px 26px;
@@ -65,7 +73,7 @@ const Button = styled.button`
     border: 1px solid #3ea6ff;
     color: #3ea6ff;
     border-radius: 3px;
-    font-weigth:500;
+    font-weight:500;
     margin-top:10px;
     cursor:pointer;
     display:flex;
@@ -79,9 +87,9 @@ const Title = styled.h2`
   margin-bottom: 20px;
 `;
 
-const Menu = ({ darkMode, setDarkMode }) => {
+const Menu = ({ darkMode, setDarkMode,toggle }) => {
     return (
-        <Container>
+        <Container toggle={toggle}>
             <Wrapper>
                 <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
                     <Logo>

@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Conatiner = styled.div`
-    width: ${(props) => props.type !== "sm" && "345px"};
+    max-width: ${(props) => props.type !== "sm" && "345px"};
+    width: 100%;
     margin-bottom: ${(props) => props.type !== "sm" ? "10px" : "45px"};
     cursor:pointer;
     display: ${(props) => props.type === "sm" && "flex"};
