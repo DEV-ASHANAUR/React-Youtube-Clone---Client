@@ -6,7 +6,7 @@ const initialState = {
     error: null
 }
 
-export const counterSlice = createSlice({
+export const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
@@ -17,11 +17,11 @@ export const counterSlice = createSlice({
             state.loading = false;
             state.currentUser = action.payload;
         },
-        loginFailure: (state, action) => {
+        loginFaild: (state, action) => {
             state.loading = false;
             state.error = action.payload;
         },
-        logout: () => {
+        logout: (state) => {
             state.currentUser = null;
             state.loading = false;
             state.error = null;
@@ -30,6 +30,6 @@ export const counterSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { loginStart, loginSuccess, loginFailure, logout } = counterSlice.actions
+export const { loginStart, loginSuccess, loginFaild, logout } = userSlice.actions
 
-export default counterSlice.reducer
+export default userSlice.reducer

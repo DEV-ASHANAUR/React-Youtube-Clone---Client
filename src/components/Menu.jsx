@@ -18,6 +18,10 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import SettingsBrightnessOutlinedIcon from "@mui/icons-material/SettingsBrightnessOutlined";
+import LogoutIcon from '@mui/icons-material/Logout';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../redux/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
     flex: 1;
@@ -87,8 +91,16 @@ const Title = styled.h2`
   margin-bottom: 20px;
 `;
 
-const Menu = ({ darkMode, setDarkMode,toggle }) => {
+const Menu = ({ darkMode, setDarkMode, toggle }) => {
+    const { currentUser } = useSelector((state) => state.user);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate('/');
+    }
     return (
+
         <Container toggle={toggle}>
             <Wrapper>
                 <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
@@ -103,7 +115,7 @@ const Menu = ({ darkMode, setDarkMode,toggle }) => {
                 </Item>
                 <Item>
                     <ExploreOutlinedIcon />
-                    Home
+                    Explore
                 </Item>
                 <Item>
                     <SubscriptionsOutlinedIcon />
@@ -119,16 +131,21 @@ const Menu = ({ darkMode, setDarkMode,toggle }) => {
                     History
                 </Item>
                 <Hr />
-                <Login>
-                    Sign in to like videos, comment, and subscribe.
-                    <Link to="/signin" style={{ textDecoration: "none"}}>
-                        <Button>
-                            <AccountCircleOutlinedIcon />
-                            SIGN IN
-                        </Button>
-                    </Link>
-                </Login>
-                <Hr />
+                {!currentUser && (
+                    <>
+                        <Login>
+                            Sign in to like videos, comment, and subscribe.
+                            <Link to="/signin" style={{ textDecoration: "none" }}>
+                                <Button>
+                                    <AccountCircleOutlinedIcon />
+                                    SIGN IN
+                                </Button>
+                            </Link>
+                        </Login>
+                        <Hr />
+                    </>
+                )}
+
                 <Title>BEST OF LAMATUBE</Title>
                 <Item>
                     <LibraryMusicOutlinedIcon />
@@ -167,6 +184,12 @@ const Menu = ({ darkMode, setDarkMode,toggle }) => {
                     <HelpOutlineOutlinedIcon />
                     Help
                 </Item>
+                {currentUser && (
+                    <Item onClick={handleLogout}>
+                        <LogoutIcon />
+                        Logout
+                    </Item>
+                )}
                 <Item onClick={() => setDarkMode(!darkMode)}>
                     <SettingsBrightnessOutlinedIcon />
                     {darkMode ? "Light" : "Dark"} Mode

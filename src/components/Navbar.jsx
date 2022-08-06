@@ -1,10 +1,13 @@
 import React from 'react'
 import styled from "styled-components";
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import YoutubeLogo from '../img/logo.png';
+import avater from '../img/user.png';
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import MenuIcon from '@mui/icons-material/Menu';
+import { useSelector } from 'react-redux';
+import { VideoCallOutlined } from '@mui/icons-material';
 // import { SwitchUnstyled } from '@mui/base';
 
 const Container = styled.div`
@@ -84,14 +87,30 @@ const Button = styled.button`
     gap: 5px;
 `;
 
+const User = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    color: ${({ theme }) => theme.text};
+`;
 
-const Navbar = ({darkMode,setTogger,toggle}) => {
-    
+const Avater = styled.img`
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 50%;
+    background-color: #999;
+`
+
+
+const Navbar = ({ darkMode, setTogger, toggle }) => {
+    const { currentUser } = useSelector((state) => state.user);
     return (
         <Container>
             <Wrapper>
                 <Toggle>
-                    <MenuIcon onClick={()=> setTogger(!toggle)} />
+                    <MenuIcon onClick={() => setTogger(!toggle)} />
                     <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
                         <Logo>
                             <Img src={YoutubeLogo} />
@@ -99,17 +118,27 @@ const Navbar = ({darkMode,setTogger,toggle}) => {
                         </Logo>
                     </Link>
                 </Toggle>
-                
+
                 <Search>
                     <Input placeholder='Search' />
-                    <SearchOutlinedIcon style={{color:`${darkMode? 'white':'#000'}`,cursor:"pointer"}} />
+                    <SearchOutlinedIcon style={{ color: `${darkMode ? 'white' : '#000'}`, cursor: "pointer" }} />
                 </Search>
-                <Link to="signin" style={{textDecoration:"none"}}>
-                    <Button>
-                        <AccountCircleOutlinedIcon />
-                        SIGN IN
-                    </Button>
-                </Link>
+                {
+                    currentUser ? (
+                        <User>
+                            <VideoCallOutlined style={{cursor:"pointer"}} />
+                            <Avater src={currentUser.img?currentUser.img:avater} />
+                        </User>
+                    ) : (
+                        <Link to="signin" style={{ textDecoration: "none" }}>
+                            <Button>
+                                <AccountCircleOutlinedIcon />
+                                SIGN IN
+                            </Button>
+                        </Link>
+                    )
+                }
+
             </Wrapper>
         </Container>
     )

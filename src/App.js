@@ -1,12 +1,14 @@
 import {useState} from 'react';
+import 'react-toastify/dist/ReactToastify.css';
 import styled,{ThemeProvider} from "styled-components";
 import {darkTheme,lightTheme} from './utils/Theme'
-import {BrowserRouter,Routes,Route} from 'react-router-dom';
+import {BrowserRouter,Routes,Route,Navigate} from 'react-router-dom';
 import Menu from './components/Menu';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Video from './pages/Video';
 import SignIn from './pages/SignIn';
+import { useSelector } from 'react-redux';
 
 // styled
 const Container = styled.div`
@@ -24,9 +26,9 @@ const Wrapper = styled.div`
 `;
 
 function App() {
+  const {currentUser} = useSelector((state)=>state.user)
   const [darkMode,setDarkMode] = useState(true);
   const [toggle,setTogger] = useState(false);
-  console.log("toggle",toggle);
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <Container>
@@ -38,7 +40,7 @@ function App() {
               <Routes>
                 <Route path='/'>
                   <Route index element={<Home/>} />
-                  <Route path="signin" element={<SignIn />} />
+                  <Route path="signin" element={currentUser ? <Navigate to="/" /> : <SignIn />} />
                   <Route path="video">
                     <Route path=":id" element={<Video />} />
                   </Route>
