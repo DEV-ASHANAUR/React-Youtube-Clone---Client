@@ -30,7 +30,7 @@ const Container = styled.div`
     position:sticky;
     top:0;
     @media (max-width: 1041px) {
-        position: absolute;
+        position: fixed;
         /* left: 100%; */
         left:${(props) => props.toggle ? "0" : "-200%"};
         height: 100vh
