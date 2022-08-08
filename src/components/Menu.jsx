@@ -39,8 +39,6 @@ const Container = styled.div`
         left:${(props) => props.toggle ? "0" : "-200%"};
         height: 100vh
     }
-    
-    
 `;
 const Wrapper = styled.div`
     padding: 18px 26px;
@@ -109,18 +107,25 @@ const Menu = ({ darkMode, setDarkMode, toggle }) => {
                         Youtube
                     </Logo>
                 </Link>
-                <Item>
-                    <HomeIcon />
-                    Home
-                </Item>
-                <Item>
-                    <ExploreOutlinedIcon />
-                    Explore
-                </Item>
-                <Item>
-                    <SubscriptionsOutlinedIcon />
-                    Subscriptions
-                </Item>
+                <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+                    <Item>
+                        <HomeIcon />
+                        Home
+                    </Item>
+                </Link>
+                <Link to="/trends" style={{ textDecoration: "none", color: "inherit" }}>
+                    <Item>
+                        <ExploreOutlinedIcon />
+                        Explore
+                    </Item>
+                </Link>
+                <Link to="/subscription" style={{textDecoration: "none", color: "inherit"}}>
+                    <Item>
+                        <SubscriptionsOutlinedIcon />
+                        Subscriptions
+                    </Item>
+                </Link>
+
                 <Hr />
                 <Item>
                     <VideoLibraryOutlinedIcon />
@@ -195,7 +200,7 @@ const Menu = ({ darkMode, setDarkMode, toggle }) => {
                     {darkMode ? "Light" : "Dark"} Mode
                 </Item>
             </Wrapper>
-        </Container>
+        </Container >
     )
 }
 

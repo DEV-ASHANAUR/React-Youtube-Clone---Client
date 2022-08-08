@@ -65,7 +65,7 @@ const Link = styled.span`
 const SignIn = () => {
   const BaseUrl = 'http://localhost:8000/api';
 
-  const { loading, error,currentUser } = useSelector((state) => state.user);
+  const { loading, error } = useSelector((state) => state.user);
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -86,12 +86,13 @@ const SignIn = () => {
     if (email && password) {
       dispatch(loginStart());
       try {
-        const res = await axios.post(`${BaseUrl}/auth/signin`, { email, password });
+        const res = await axios.post(`${BaseUrl}/auth/signin`, { email, password },{withCredentials:true});
+        // console.log(res);
         dispatch(loginSuccess(res.data));
         navigate("/");
       } catch (error) {
         dispatch(loginFaild(error.response.data))
-        // console.log(error)
+        console.log(error)
       }
     } else {
       toast.error("All Field Are Required!");

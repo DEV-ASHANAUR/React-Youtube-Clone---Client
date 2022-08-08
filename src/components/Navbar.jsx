@@ -102,7 +102,9 @@ const Avater = styled.img`
     border-radius: 50%;
     background-color: #999;
 `
-
+const Name = styled.span`
+    text-transform: capitalize;
+`
 
 const Navbar = ({ darkMode, setTogger, toggle }) => {
     const { currentUser } = useSelector((state) => state.user);
@@ -128,6 +130,8 @@ const Navbar = ({ darkMode, setTogger, toggle }) => {
                         <User>
                             <VideoCallOutlined style={{cursor:"pointer"}} />
                             <Avater src={currentUser.img?currentUser.img:avater} />
+                            <Name>{currentUser.name}</Name>
+                            
                         </User>
                     ) : (
                         <Link to="signin" style={{ textDecoration: "none" }}>

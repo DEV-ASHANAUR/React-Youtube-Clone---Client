@@ -1,6 +1,9 @@
-import React from 'react'
+import React, { useState,useEffect } from 'react'
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import {format} from "timeago.js";
+import axios from 'axios';
+import avater from '../img/user.png';
 
 const Conatiner = styled.div`
     width: ${(props) => props.type !== "sm" && "345px"};
@@ -38,11 +41,13 @@ const Texts = styled.div`
     
 `;
 const Title = styled.h1`
+    text-transform: capitalize;
     font-size: 16px;
     font-weight: 500;
     color: ${({ theme }) => theme.text};
 `;
 const ChannelName = styled.h2`
+    text-transform: capitalize;
     font-size: 14px;
     color: ${({ theme }) => theme.textSoft};
     margin: 9px 0px;
@@ -53,17 +58,32 @@ const Info = styled.div`
 `;
 
 
-const Card = ({ type }) => {
+const Card = ({ type,video }) => {
+  const BaseUrl = 'http://localhost:8000/api';
+  const [channel,setChannel] = useState({});
+
+  useEffect(()=>{
+    const fetchVideos = async () =>{
+      try {
+        const res = await axios.get(`${BaseUrl}/users/find/${video.userId}`);
+        // console.log(res.data);
+        setChannel(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchVideos();
+  },[video.userId])
     return (
-        <Link to="/video/dfgbvds" style={{ textDecoration: "none" }}>
+        <Link to={`/video/${video._id}`} style={{ textDecoration: "none" }}>
             <Conatiner type={type}>
-                <Image type={type} src="https://legiit-service.s3.amazonaws.com/e6b231fb2b3929775603d68aba761207/6f2c8ec05be61314ccee5bce008da04c.jpg" />
+                <Image type={type} src={video.imgUrl} />
                 <Details type={type}>
-                    <ChannelImage type={type} src="https://yt3.ggpht.com/yti/APfAmoE-Q0ZLJ4vk3vqmV4Kwp0sbrjxLyB8Q4ZgNsiRH=s88-c-k-c0x00ffffff-no-rj-mo" />
+                    <ChannelImage type={type} src={channel.img?channel.img:avater} />
                     <Texts>
-                        <Title>Test Video</Title>
-                        <ChannelName>Nice Weather</ChannelName>
-                        <Info>660,908 views • 1 day ago </Info>
+                        <Title>{video.title}</Title>
+                        <ChannelName>{channel.name}</ChannelName>
+                        <Info>{video.views} views • {format(video.createdAt)} </Info>
                     </Texts>
                 </Details>
             </Conatiner>
