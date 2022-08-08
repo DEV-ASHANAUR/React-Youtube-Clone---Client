@@ -1,12 +1,22 @@
-import React from 'react'
+import React,{useState} from 'react'
 import styled from 'styled-components';
-
+import avater from '../img/user.png';
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
 import Comments from '../components/Comments';
 import Card from '../components/Card';
+import {useDispatch,useSelector} from 'react-redux'
+import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { async } from '@firebase/util';
+import axios from 'axios';
+import { dislike, fetchFailure, fetchSuccess, like } from '../redux/videoSlice';
+import { format } from 'timeago.js';
+import Recommendation from '../components/Recommendation';
 
 const Container = styled.div`
     display:flex;
@@ -51,9 +61,7 @@ const Hr = styled.hr`
     margin: 15px 0px;
     border: 0.5px solid ${({ theme }) => theme.soft};
 `;
-const Recommendation = styled.div`
-    flex: 2;
-`;
+
 const Channel = styled.div`
     display: flex;
     justify-content: space-between;
@@ -73,6 +81,7 @@ const ChannelDetail = styled.div`
     color: ${({ theme }) => theme.text};
 `;
 const ChannelName = styled.span`
+    text-transform: capitalize;
     font-weight: 500;
 `;
 const ChannelCounter = styled.span`
@@ -82,6 +91,7 @@ const ChannelCounter = styled.span`
     font-size: 12px;
 `;
 const Description = styled.p`
+    text-transform: capitalize;
     font-size: 14px;
 `;
 const Subscribe = styled.span`
@@ -94,33 +104,83 @@ const Subscribe = styled.span`
     padding: 10px 20px;
     cursor: pointer;
 `;
-
+const VideoFrame = styled.video`
+  max-height: 520px;
+  width: 100%;
+  object-fit: cover;
+`;
 
 
 const Video = () => {
+    const BaseUrl = 'http://localhost:8000/api';
+    const api = axios.create({
+        baseURL: BaseUrl,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Cache: "no-cache",
+        },
+        withCredentials: true,  // <=== add here
+        timeout: 60000
+      })
+    const dispatch = useDispatch();
+    const {currentUser} = useSelector((state)=>state.user);
+    const {currentVideo} = useSelector((state)=>state.video);
+    const path = useLocation().pathname.split("/")[2];
+    console.log("path",path);
+    const [channel,setChannel] = useState({});
+
+    useEffect(()=>{
+        const fetchData = async()=>{
+            try {
+                const videoRes = await axios.get(`${BaseUrl}/video/find/${path}`,{withCredentials:true});
+                const channelRes = await axios.get(`${BaseUrl}/users/find/${videoRes.data.userId}`,{withCredentials:true});
+                console.log("video",videoRes);
+                setChannel(channelRes.data);
+                dispatch(fetchSuccess(videoRes.data));
+            } catch (error) {
+                dispatch(fetchFailure());
+                console.log(error)
+            }
+        }
+        fetchData();
+    },[path,dispatch]);
+    const handleLike = async () =>{
+        await api.put(`/users/like/${currentVideo._id}`);
+        dispatch(like(currentUser._id));
+    }
+
+    const handleDisLike = async ()=>{
+        await api.put(`/users/dislike/${currentVideo._id}`);
+        dispatch(dislike(currentUser._id));
+    }
+
     return (
         <Container>
             <Content>
                 <VideoWrapper>
-                    <iframe
-                        width="100%"
-                        height="400"
-                        src="https://www.youtube.com/embed/k3Vfj-e1Ma4"
-                        title="YouTube video player"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen
-                    ></iframe>
+                    <VideoFrame src={currentVideo?.videoUrl} controls />
                 </VideoWrapper>
-                <Title>Today's Weather</Title>
+                <Title>{currentVideo.title}</Title>
                 <Details>
-                    <Info>7,948,154 views • Jun 22, 2022</Info>
+                    <Info>{currentVideo.views} views • {format(currentVideo.createdAt)}</Info>
                     <Buttons>
-                        <Button>
-                            <ThumbUpOutlinedIcon /> 123
+                        <Button onClick={handleLike}>
+                            {currentVideo.likes?.includes(currentUser?._id)?(
+                                <ThumbUpIcon />
+                            ):(
+                                <ThumbUpOutlinedIcon /> 
+                            )}
+                            
+                            {currentVideo.likes?.length}
                         </Button>
-                        <Button>
-                            <ThumbDownOffAltOutlinedIcon /> Dislike
+                        <Button onClick={handleDisLike}>
+                            {currentVideo.dislikes?.includes(currentUser?._id)?(
+                                <ThumbDownIcon />
+                            ):(
+                                <ThumbDownOffAltOutlinedIcon />
+                            )}
+                             Dislike
                         </Button>
                         <Button>
                             <ReplyOutlinedIcon /> Share
@@ -133,12 +193,12 @@ const Video = () => {
                 <Hr />
                 <Channel>
                     <ChannelInfo>
-                        <Image src="https://yt3.ggpht.com/yti/APfAmoE-Q0ZLJ4vk3vqmV4Kwp0sbrjxLyB8Q4ZgNsiRH=s88-c-k-c0x00ffffff-no-rj-mo" />
+                        <Image src={channel.img?channel.img:avater} />
                         <ChannelDetail>
-                            <ChannelName>MAR</ChannelName>
-                            <ChannelCounter>500k subscribers</ChannelCounter>
+                            <ChannelName>{channel.name}</ChannelName>
+                            <ChannelCounter>{channel.subscribers} subscribers</ChannelCounter>
                             <Description>
-                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Omnis, consequatur! Pariatur necessitatibus itaque quis aperiam ut nostrum iusto assumenda cumque accusamus a. Inventore asperiores at vel quam, totam dolores accusantium.
+                                {currentVideo.desc}
                             </Description>
                         </ChannelDetail>
                     </ChannelInfo>
@@ -147,25 +207,7 @@ const Video = () => {
                 <Hr />
                 <Comments />
             </Content>
-            <Recommendation>
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-                <Card type="sm" />
-            </Recommendation>
+            <Recommendation tags={currentVideo.tags} />
         </Container>
     )
 }
