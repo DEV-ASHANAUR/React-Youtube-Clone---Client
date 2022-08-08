@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from "styled-components";
 import { Link } from 'react-router-dom'
 import YoutubeLogo from '../img/logo.png';
@@ -8,6 +8,7 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import MenuIcon from '@mui/icons-material/Menu';
 import { useSelector } from 'react-redux';
 import { VideoCallOutlined } from '@mui/icons-material';
+import Upload from './Upload';
 // import { SwitchUnstyled } from '@mui/base';
 
 const Container = styled.div`
@@ -107,44 +108,48 @@ const Name = styled.span`
 `
 
 const Navbar = ({ darkMode, setTogger, toggle }) => {
+    const [open, setOpen] = useState(false);
     const { currentUser } = useSelector((state) => state.user);
     return (
-        <Container>
-            <Wrapper>
-                <Toggle>
-                    <MenuIcon onClick={() => setTogger(!toggle)} />
-                    <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-                        <Logo>
-                            <Img src={YoutubeLogo} />
-                            Youtube
-                        </Logo>
-                    </Link>
-                </Toggle>
-
-                <Search>
-                    <Input placeholder='Search' />
-                    <SearchOutlinedIcon style={{ color: `${darkMode ? 'white' : '#000'}`, cursor: "pointer" }} />
-                </Search>
-                {
-                    currentUser ? (
-                        <User>
-                            <VideoCallOutlined style={{cursor:"pointer"}} />
-                            <Avater src={currentUser.img?currentUser.img:avater} />
-                            <Name>{currentUser.name}</Name>
-                            
-                        </User>
-                    ) : (
-                        <Link to="signin" style={{ textDecoration: "none" }}>
-                            <Button>
-                                <AccountCircleOutlinedIcon />
-                                SIGN IN
-                            </Button>
+        <>
+            <Container>
+                <Wrapper>
+                    <Toggle>
+                        <MenuIcon onClick={() => setTogger(!toggle)} />
+                        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+                            <Logo>
+                                <Img src={YoutubeLogo} />
+                                Youtube
+                            </Logo>
                         </Link>
-                    )
-                }
+                    </Toggle>
 
-            </Wrapper>
-        </Container>
+                    <Search>
+                        <Input placeholder='Search' />
+                        <SearchOutlinedIcon style={{ color: `${darkMode ? 'white' : '#000'}`, cursor: "pointer" }} />
+                    </Search>
+                    {
+                        currentUser ? (
+                            <User>
+                                <VideoCallOutlined style={{ cursor: "pointer" }} onClick={()=>setOpen(true)} />
+                                <Avater src={currentUser.img ? currentUser.img : avater} />
+                                <Name>{currentUser.name}</Name>
+
+                            </User>
+                        ) : (
+                            <Link to="signin" style={{ textDecoration: "none" }}>
+                                <Button>
+                                    <AccountCircleOutlinedIcon />
+                                    SIGN IN
+                                </Button>
+                            </Link>
+                        )
+                    }
+
+                </Wrapper>
+            </Container>
+            {open && <Upload setOpen={setOpen} />}
+        </>
     )
 }
 

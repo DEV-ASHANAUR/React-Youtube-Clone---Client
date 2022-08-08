@@ -6,7 +6,7 @@ import { loginFaild, loginStart, loginSuccess, logout } from '../redux/userSlice
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from '../.firebase';
+import { auth, provider } from '../firebase';
 const Conatiner = styled.div`
   display: flex;
   flex-direction: column;
@@ -107,7 +107,7 @@ const SignIn = () => {
         name: result.user.displayName,
         email: result.user.email,
         img: result.user.photoURL,
-      }).then((res)=>{
+      },{withCredentials:true}).then((res)=>{
         dispatch(loginSuccess(res.data));
         navigate("/");
       }).catch((error)=>{
@@ -124,7 +124,7 @@ const SignIn = () => {
     if (name && email && password) {
       dispatch(loginStart());
       try {
-        const res = await axios.post(`${BaseUrl}/auth/signup`, { name, email, password });
+        const res = await axios.post(`${BaseUrl}/auth/signup`, { name, email, password },{withCredentials:true});
         dispatch(loginSuccess(res.data));
         navigate("/");
       } catch (error) {
