@@ -25,11 +25,20 @@ export const userSlice = createSlice({
             state.currentUser = null;
             state.loading = false;
             state.error = null;
+        },
+        subscription: (state, action) => {
+            if (state.currentUser.subscribedUsers.includes(action.payload)) {
+                state.currentUser.subscribedUsers.splice(
+                    state.currentUser.subscribedUsers.findIndex((channelId) => channelId === action.payload), 1
+                );
+            } else {
+                state.currentUser.subscribedUsers.push(action.payload);
+            }
         }
     },
 })
 
 // Action creators are generated for each case reducer function
-export const { loginStart, loginSuccess, loginFaild, logout } = userSlice.actions
+export const { loginStart, loginSuccess, loginFaild, logout,subscription } = userSlice.actions
 
 export default userSlice.reducer

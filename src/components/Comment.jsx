@@ -1,5 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { format } from "timeago.js";
+import avater from '../img/user.png';
+import axios from "axios";
+import { ToastContainer } from "react-toastify";
 
 const Container = styled.div`
   display: flex;
@@ -35,19 +39,42 @@ const Text = styled.span`
   font-size: 14px;
 `;
 
-const Comment = () => {
+const Comment = ({comment}) => {
+  const BaseUrl = 'http://localhost:8000/api';
+  const api = axios.create({
+      baseURL: BaseUrl,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Cache: "no-cache",
+      },
+      withCredentials: true,  // <=== add here
+      timeout: 60000
+    })
+
+  const [channel,setChannel] = useState({});
+
+  useEffect(()=>{
+    const fetchChannel = async () => {
+      try {
+        const res = await api.get(`/users/find/${comment.userId}`);
+        setChannel(res.data);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchChannel();
+  },[]);
+
   return (
     <Container>
-      <Avatar src="https://yt3.ggpht.com/yti/APfAmoE-Q0ZLJ4vk3vqmV4Kwp0sbrjxLyB8Q4ZgNsiRH=s88-c-k-c0x00ffffff-no-rj-mo" />
+      <Avatar src={channel?.img?channel.img:avater} />
       <Details>
         <Name>
-          John Doe <Date>1 day ago</Date>
+          {channel.name} <Date>{format(comment.createdAt)}</Date>
         </Name>
         <Text>
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel, ex
-          laboriosam ipsam aliquam voluptatem perferendis provident modi, sequi
-          tempore reiciendis quod, optio ullam cumque? Quidem numquam sint
-          mollitia totam reiciendis?
+          {comment.desc}
         </Text>
       </Details>
     </Container>

@@ -103,6 +103,7 @@ const SignIn = () => {
   const signInWithGoogle = async () => {
     dispatch(loginStart());
     signInWithPopup(auth, provider).then((result) => {
+      console.log(result);
       axios.post(`${BaseUrl}/auth/google`, {
         name: result.user.displayName,
         email: result.user.email,

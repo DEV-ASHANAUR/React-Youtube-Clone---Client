@@ -132,7 +132,7 @@ const Navbar = ({ darkMode, setTogger, toggle }) => {
                         currentUser ? (
                             <User>
                                 <VideoCallOutlined style={{ cursor: "pointer" }} onClick={()=>setOpen(true)} />
-                                <Avater src={currentUser.img ? currentUser.img : avater} />
+                                <Avater src={currentUser.img ? currentUser?.img : avater} />
                                 <Name>{currentUser.name}</Name>
 
                             </User>

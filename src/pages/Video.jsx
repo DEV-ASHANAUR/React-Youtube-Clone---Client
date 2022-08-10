@@ -8,7 +8,6 @@ import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
 import Comments from '../components/Comments';
-import Card from '../components/Card';
 import {useDispatch,useSelector} from 'react-redux'
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -17,6 +16,8 @@ import axios from 'axios';
 import { dislike, fetchFailure, fetchSuccess, like } from '../redux/videoSlice';
 import { format } from 'timeago.js';
 import Recommendation from '../components/Recommendation';
+import { subscription } from '../redux/userSlice';
+import {toast,ToastContainer} from 'react-toastify';
 
 const Container = styled.div`
     display:flex;
@@ -41,8 +42,19 @@ const Title = styled.h1`
 const Details = styled.div`
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     justify-content: space-between;
+    position: relative;
 `;
+// const Popup = styled.div`
+//     max-width: 100px;
+//     padding: 10px;
+//     border-radius: 10px;
+//     background-color: #4e4e4e;
+//     position: absolute;
+//     bottom: -25%;
+//     left:55%;
+// `
 const Info = styled.span`
     color: ${({ theme }) => theme.textSoft};
 `;
@@ -63,6 +75,7 @@ const Hr = styled.hr`
 `;
 
 const Channel = styled.div`
+    position: relative;
     display: flex;
     justify-content: space-between;
 `;
@@ -104,6 +117,16 @@ const Subscribe = styled.span`
     padding: 10px 20px;
     cursor: pointer;
 `;
+const Subscribed = styled.span`
+    background-color: #ECECEC;
+    font-weight: 500;
+    color: #606060;
+    border: none;
+    border-radius: 3px;
+    height: max-content;
+    padding: 10px 20px;
+    cursor: pointer;
+`
 const VideoFrame = styled.video`
   max-height: 520px;
   width: 100%;
@@ -145,14 +168,32 @@ const Video = () => {
         }
         fetchData();
     },[path,dispatch]);
+
     const handleLike = async () =>{
-        await api.put(`/users/like/${currentVideo._id}`);
-        dispatch(like(currentUser._id));
+        if(currentUser){
+            await api.put(`/users/like/${currentVideo._id}`);
+            dispatch(like(currentUser._id));
+        }else{
+            toast.warn("Please Login for Like!")
+        }
     }
 
     const handleDisLike = async ()=>{
-        await api.put(`/users/dislike/${currentVideo._id}`);
-        dispatch(dislike(currentUser._id));
+        if(currentUser){
+            await api.put(`/users/dislike/${currentVideo._id}`);
+            dispatch(dislike(currentUser._id));
+        }else{
+            toast.warn("Please Login for DisLike!")
+        }
+    }
+
+    const handleSub = async() =>{
+        if(currentUser){
+            currentUser.subscribedUsers.includes(channel._id)? await api.put(`/users/unsub/${currentVideo._id}`): await api.put(`/users/sub/${channel._id}`);
+            dispatch(subscription(channel._id));
+        }else{
+            toast.warn("Please Login for Subscribe!")
+        }
     }
 
     return (
@@ -189,6 +230,7 @@ const Video = () => {
                             <AddTaskOutlinedIcon /> Save
                         </Button>
                     </Buttons>
+                    
                 </Details>
                 <Hr />
                 <Channel>
@@ -202,12 +244,24 @@ const Video = () => {
                             </Description>
                         </ChannelDetail>
                     </ChannelInfo>
-                    <Subscribe>SUBSCRIBE</Subscribe>
+                    {
+                        currentUser?.subscribedUsers?.includes(channel._id)? (
+                            <Subscribed onClick={handleSub}>
+                                SUBSCRIBED
+                            </Subscribed>
+                        ):(
+                            <Subscribe onClick={handleSub}>
+                                SUBSCRIBE
+                            </Subscribe>
+                        )
+                    }
+                    {/* <Popup>Please Login For - like commennt and subscribe</Popup> */}
                 </Channel>
                 <Hr />
-                <Comments />
+                <Comments videoId={currentVideo._id} />
             </Content>
             <Recommendation tags={currentVideo.tags} />
+            <ToastContainer />
         </Container>
     )
 }
