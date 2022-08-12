@@ -11,13 +11,13 @@ import Comments from '../components/Comments';
 import {useDispatch,useSelector} from 'react-redux'
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import { async } from '@firebase/util';
 import axios from 'axios';
 import { dislike, fetchFailure, fetchSuccess, like } from '../redux/videoSlice';
 import { format } from 'timeago.js';
 import Recommendation from '../components/Recommendation';
 import { subscription } from '../redux/userSlice';
 import {toast,ToastContainer} from 'react-toastify';
+import { async } from '@firebase/util';
 
 const Container = styled.div`
     display:flex;
@@ -150,24 +150,46 @@ const Video = () => {
     const {currentUser} = useSelector((state)=>state.user);
     const {currentVideo} = useSelector((state)=>state.video);
     const path = useLocation().pathname.split("/")[2];
-    console.log("path",path);
+
     const [channel,setChannel] = useState({});
 
-    useEffect(()=>{
-        const fetchData = async()=>{
-            try {
-                const videoRes = await axios.get(`${BaseUrl}/video/find/${path}`,{withCredentials:true});
-                const channelRes = await axios.get(`${BaseUrl}/users/find/${videoRes.data.userId}`,{withCredentials:true});
-                console.log("video",videoRes);
-                setChannel(channelRes.data);
-                dispatch(fetchSuccess(videoRes.data));
-            } catch (error) {
-                dispatch(fetchFailure());
-                console.log(error)
-            }
+    const handleSub = async() =>{
+        if(currentUser){
+            currentUser.subscribedUsers.includes(channel._id)? await api.put(`/users/unsub/${channel._id}`): await api.put(`/users/sub/${channel._id}`);
+            dispatch(subscription(channel._id));
+            fetchData();
+        }else{
+            toast.warn("Please Login for Subscribe!")
         }
+    }
+
+    useEffect(()=>{
         fetchData();
+        addView();
     },[path,dispatch]);
+
+    const addView = async() =>{
+        try {
+            await api.put(`/video/view/${path}`);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const fetchData = async()=>{
+        try {
+            const videoRes = await axios.get(`${BaseUrl}/video/find/${path}`,{withCredentials:true});
+
+            const channelRes = await axios.get(`${BaseUrl}/users/find/${videoRes.data.userId}`,{withCredentials:true});
+
+            setChannel(channelRes.data);
+
+            dispatch(fetchSuccess(videoRes.data));
+        } catch (error) {
+            dispatch(fetchFailure());
+            console.log(error)
+        }
+    }
 
     const handleLike = async () =>{
         if(currentUser){
@@ -187,14 +209,6 @@ const Video = () => {
         }
     }
 
-    const handleSub = async() =>{
-        if(currentUser){
-            currentUser.subscribedUsers.includes(channel._id)? await api.put(`/users/unsub/${currentVideo._id}`): await api.put(`/users/sub/${channel._id}`);
-            dispatch(subscription(channel._id));
-        }else{
-            toast.warn("Please Login for Subscribe!")
-        }
-    }
 
     return (
         <Container>
@@ -202,7 +216,7 @@ const Video = () => {
                 <VideoWrapper>
                     <VideoFrame src={currentVideo?.videoUrl} controls />
                 </VideoWrapper>
-                <Title>{currentVideo.title}</Title>
+                <Title>{currentVideo?.title}</Title>
                 <Details>
                     <Info>{currentVideo.views} views • {format(currentVideo.createdAt)}</Info>
                     <Buttons>
@@ -230,7 +244,6 @@ const Video = () => {
                             <AddTaskOutlinedIcon /> Save
                         </Button>
                     </Buttons>
-                    
                 </Details>
                 <Hr />
                 <Channel>

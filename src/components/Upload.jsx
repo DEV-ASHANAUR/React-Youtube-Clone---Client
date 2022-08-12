@@ -27,7 +27,6 @@ const Wpapper = styled.div`
     display: flex;
     flex-direction: column;
     gap: 20px;
-    
     position: relative;
 `
 const Close = styled.div`
@@ -138,6 +137,7 @@ const Upload = ({ setOpen }) => {
         try {
             const res = await axios.post(`${BaseUrl}/video`, { ...inputs, tags }, { withCredentials: true });
             setOpen(false);
+            navigate(`/video/${res.data._id}`)
         } catch (error) {
             console.log(error)
         }
@@ -151,7 +151,7 @@ const Upload = ({ setOpen }) => {
                 <Label>Video:</Label>
 
                 {videoPerc > 0 ? (
-                    "Uploading:" + videoPerc
+                    "Uploading:" + videoPerc + "%"
                 ) : (
                     <Input
                         type="file"
@@ -178,7 +178,7 @@ const Upload = ({ setOpen }) => {
                     />
                 )}
 
-                <Button onClick={handleUpload} >Upload</Button>
+                <Button onClick={handleUpload} disabled={imgPerc !==100 && videoPerc!==100 }>Upload</Button>
 
             </Wpapper>
         </Container>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import styled from "styled-components";
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import YoutubeLogo from '../img/logo.png';
 import avater from '../img/user.png';
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
@@ -9,6 +9,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useSelector } from 'react-redux';
 import { VideoCallOutlined } from '@mui/icons-material';
 import Upload from './Upload';
+import SearchModal from './SearchModal';
 // import { SwitchUnstyled } from '@mui/base';
 
 const Container = styled.div`
@@ -16,6 +17,7 @@ const Container = styled.div`
     top: 0;
     background-color: ${({ theme }) => theme.bgLighter};
     height: 56px;
+    z-index: 10;
 `;
 const Wrapper = styled.div`
     display: flex;
@@ -105,11 +107,29 @@ const Avater = styled.img`
 `
 const Name = styled.span`
     text-transform: capitalize;
+    @media (max-width: 576px) {
+        display: none;
+    }
+`
+
+const SearchBtn = styled.div`
+    display: none;
+    @media (max-width: 576px) {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 500;
+        color: ${({ theme }) => theme.text};
+    }
+    
 `
 
 const Navbar = ({ darkMode, setTogger, toggle }) => {
+    const [q, setQ] = useState();
     const [open, setOpen] = useState(false);
+    const [sopen, setSopen] = useState(false);
     const { currentUser } = useSelector((state) => state.user);
+    const navigate = useNavigate();
     return (
         <>
             <Container>
@@ -123,10 +143,12 @@ const Navbar = ({ darkMode, setTogger, toggle }) => {
                             </Logo>
                         </Link>
                     </Toggle>
-
+                    <SearchBtn>
+                        <SearchOutlinedIcon onClick={()=>setSopen(true)} />
+                    </SearchBtn>
                     <Search>
-                        <Input placeholder='Search' />
-                        <SearchOutlinedIcon style={{ color: `${darkMode ? 'white' : '#000'}`, cursor: "pointer" }} />
+                        <Input placeholder='Search' onChange={(e)=>setQ(e.target.value)} />
+                        <SearchOutlinedIcon style={{ color: `${darkMode ? 'white' : '#000'}`, cursor: "pointer" }} onClick={()=>navigate(`/search?q=${q}`)} />
                     </Search>
                     {
                         currentUser ? (
@@ -148,6 +170,7 @@ const Navbar = ({ darkMode, setTogger, toggle }) => {
 
                 </Wrapper>
             </Container>
+            {sopen && <SearchModal setSopen={setSopen} />}
             {open && <Upload setOpen={setOpen} />}
         </>
     )

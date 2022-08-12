@@ -1,7 +1,7 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import {format} from "timeago.js";
+import { format } from "timeago.js";
 import axios from 'axios';
 import avater from '../img/user.png';
 
@@ -42,52 +42,54 @@ const Texts = styled.div`
 `;
 const Title = styled.h1`
     text-transform: capitalize;
-    font-size: 16px;
+    font-size: ${(props) => props.type === "sm" ? "12px": "16px"};
     font-weight: 500;
     color: ${({ theme }) => theme.text};
 `;
 const ChannelName = styled.h2`
     text-transform: capitalize;
-    font-size: 14px;
+    font-size: ${(props) => props.type === "sm" ? "11px": "14px"};
     color: ${({ theme }) => theme.textSoft};
     margin: 9px 0px;
 `;
 const Info = styled.div`
-    font-size: 14px;
+    font-size: ${(props) => props.type === "sm" ? "12px": "14px"};
     color: ${({ theme }) => theme.textSoft};
 `;
 
 
-const Card = ({ type,video }) => {
-  const BaseUrl = 'http://localhost:8000/api';
-  const [channel,setChannel] = useState({});
+const Card = ({ type, video }) => {
+    const BaseUrl = 'http://localhost:8000/api';
+    const [channel, setChannel] = useState({});
 
-  useEffect(()=>{
-    const fetchVideos = async () =>{
-      try {
-        const res = await axios.get(`${BaseUrl}/users/find/${video.userId}`);
-        // console.log(res.data);
-        setChannel(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    fetchVideos();
-  },[video.userId])
+    useEffect(() => {
+        const fetchVideos = async () => {
+            try {
+                const res = await axios.get(`${BaseUrl}/users/find/${video.userId}`);
+                // console.log(res.data);
+                setChannel(res.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        fetchVideos();
+    }, [video.userId])
     return (
-        <Link to={`/video/${video._id}`} style={{ textDecoration: "none" }}>
-            <Conatiner type={type}>
-                <Image type={type} src={video.imgUrl} />
-                <Details type={type}>
-                    <ChannelImage type={type} src={channel.img?channel.img:avater} />
-                    <Texts>
-                        <Title>{video.title}</Title>
-                        <ChannelName>{channel.name}</ChannelName>
-                        <Info>{video.views} views • {format(video.createdAt)} </Info>
-                    </Texts>
-                </Details>
-            </Conatiner>
-        </Link>
+        <>
+            <Link to={`/video/${video._id}`} style={{ textDecoration: "none" }}>
+                <Conatiner type={type}>
+                    <Image type={type} src={video.imgUrl} />
+                    <Details type={type}>
+                        <ChannelImage type={type} src={channel.img ? channel?.img : avater} />
+                        <Texts>
+                            <Title type={type}>{(video.title.length > 28)? video.title.substring(0,28)+"...":video.title }</Title>
+                            <ChannelName type={type}>{channel.name}</ChannelName>
+                            <Info type={type}>{video.views} views • {format(video.createdAt)} </Info>
+                        </Texts>
+                    </Details>
+                </Conatiner>
+            </Link>
+        </>
     )
 }
 

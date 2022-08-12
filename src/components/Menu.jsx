@@ -22,6 +22,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/userSlice';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer,toast } from 'react-toastify';
 
 const Container = styled.div`
     flex: 1;
@@ -37,7 +38,8 @@ const Container = styled.div`
         position: fixed;
         /* left: 100%; */
         left:${(props) => props.toggle ? "0" : "-200%"};
-        height: 100vh
+        height: 100vh;
+        z-index: 5;
     }
 `;
 const Wrapper = styled.div`
@@ -97,6 +99,11 @@ const Menu = ({ darkMode, setDarkMode, toggle }) => {
         dispatch(logout());
         navigate('/');
     }
+    const updateMessage = () =>{
+        toast.warn("Section Updating On Progress!",{
+            position: "bottom-right",
+        });
+    }
     return (
 
         <Container toggle={toggle}>
@@ -127,11 +134,11 @@ const Menu = ({ darkMode, setDarkMode, toggle }) => {
                 </Link>
 
                 <Hr />
-                <Item>
+                <Item onClick={updateMessage}>
                     <VideoLibraryOutlinedIcon />
                     Library
                 </Item>
-                <Item>
+                <Item onClick={updateMessage}>
                     <HistoryOutlinedIcon />
                     History
                 </Item>
@@ -152,40 +159,40 @@ const Menu = ({ darkMode, setDarkMode, toggle }) => {
                 )}
 
                 <Title>BEST OF YOUTUBE</Title>
-                <Item>
+                <Item onClick={updateMessage}>
                     <LibraryMusicOutlinedIcon />
                     Music
                 </Item>
-                <Item>
+                <Item onClick={updateMessage}>
                     <SportsBasketballOutlinedIcon />
                     Sports
                 </Item>
-                <Item>
+                <Item onClick={updateMessage}>
                     <SportsEsportsOutlinedIcon />
                     Gaming
                 </Item>
-                <Item>
+                <Item onClick={updateMessage}>
                     <MovieOutlinedIcon />
                     Movies
                 </Item>
-                <Item>
+                <Item onClick={updateMessage}>
                     <ArticleOutlinedIcon />
                     News
                 </Item>
-                <Item>
+                <Item onClick={updateMessage}>
                     <LiveTvOutlinedIcon />
                     Live
                 </Item>
                 <Hr />
-                <Item>
+                <Item onClick={updateMessage}>
                     <SettingsOutlinedIcon />
                     Settings
                 </Item>
-                <Item>
+                <Item onClick={updateMessage}>
                     <FlagOutlinedIcon />
                     Report
                 </Item>
-                <Item>
+                <Item onClick={updateMessage}>
                     <HelpOutlineOutlinedIcon />
                     Help
                 </Item>
@@ -200,6 +207,7 @@ const Menu = ({ darkMode, setDarkMode, toggle }) => {
                     {darkMode ? "Light" : "Dark"} Mode
                 </Item>
             </Wrapper>
+            <ToastContainer />
         </Container >
     )
 }

@@ -2,6 +2,7 @@ import axios from 'axios';
 import React from 'react'
 import { useEffect } from 'react';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components'
 import Card from '../components/Card';
 
@@ -22,16 +23,19 @@ const Loading = styled.div`
   height: 100vh;
 
 `
-const Home = ({type}) => {
+const Home = () => {
   const BaseUrl = 'http://localhost:8000/api';
   const [videos,setVideos] = useState([]);
   const [loading,setLoading] = useState(false);
+  const query = useLocation().search;
+
+  console.log(loading)
 
   useEffect(()=>{
     const fetchVideos = async () =>{
       setLoading(true);
       try {
-        const res = await axios.get(`${BaseUrl}/video/${type}`,{withCredentials:true});
+        const res = await axios.get(`${BaseUrl}/video/search${query}`,{withCredentials:true});
         // console.log(res.data);
         setVideos(res.data);
       } catch (error) {
@@ -40,7 +44,7 @@ const Home = ({type}) => {
       setLoading(false)
     }
     fetchVideos();
-  },[type])
+  },[query])
 
   return (
     <Container>

@@ -8,23 +8,33 @@ import Card from './Card'
 const Container = styled.div`
     flex: 2;
 `
-const Recommendation = ({tags}) => {
+const Recommendation = ({ tags }) => {
   const BaseUrl = 'http://localhost:8000/api';
-  const [videos,setVideos] = useState([]);
+  const api = axios.create({
+    baseURL: BaseUrl,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Cache: "no-cache",
+    },
+    withCredentials: true,  // <=== add here
+    timeout: 60000
+  })
+  const [videos, setVideos] = useState([]);
 
-  useEffect(()=>{
-    const fetchVideos = async () =>{
-        const res = await axios.get(`${BaseUrl}/video/tags?tags=${tags}`);
-
-        setVideos(res.data);
+  useEffect(() => {
+    const fetchVideos = async () => {
+      const res = await api.get(`/video/tags?tags=${tags}`);
+      setVideos(res.data);
     }
-  },[])
+    fetchVideos();
+  }, [])
   return (
     <Container>
-        {videos.map((video)=>(
-            <Card key={videos._id} video={video} />
-        ))}
-        
+      {videos.map((video) => (
+        <Card type="sm" key={video._id} video={video} />
+      ))}
+
     </Container>
   )
 }
