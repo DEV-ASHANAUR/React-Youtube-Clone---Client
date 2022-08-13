@@ -16,6 +16,7 @@ const Container = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 9999;
 `
 const Wpapper = styled.div`
     max-width: 600px;
@@ -62,6 +63,10 @@ const Button = styled.button`
   cursor: pointer;
   background-color: ${({ theme }) => theme.soft};
   color: ${({ theme }) => theme.textSoft};
+  :disabled{
+    background: silver;
+    cursor: not-allowed;
+}
 `;
 const Label = styled.label`
   font-size: 14px;
@@ -70,12 +75,25 @@ const Label = styled.label`
 
 const Upload = ({ setOpen }) => {
     const BaseUrl = 'http://localhost:8000/api';
+    const api = axios.create({
+        baseURL: BaseUrl,
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Cache: "no-cache",
+        },
+        withCredentials: true,  // <=== add here
+        timeout: 60000
+    })
+    const [loading,setLoading] = useState(false);
     const [img, setImg] = useState(undefined);
     const [video, setVideo] = useState(undefined);
     const [imgPerc, setImgPerc] = useState(0);
     const [videoPerc, setVideoPerc] = useState(0);
     const [inputs, setInputs] = useState({});
     const [tags, setTags] = useState([]);
+    const [readyImg,setReadyImg] = useState(true);
+    const [readyVid,setReadyVid] = useState(true);
 
     const navigate = useNavigate();
 
@@ -119,6 +137,11 @@ const Upload = ({ setOpen }) => {
                     setInputs((prev) => {
                         return { ...prev, [urlType]: downloadURL };
                     });
+                    if(urlType === 'videoUrl'){
+                        setReadyVid(false);
+                    }else{
+                        setReadyImg(false);
+                    }
                 });
             }
         );
@@ -135,13 +158,18 @@ const Upload = ({ setOpen }) => {
     const handleUpload = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post(`${BaseUrl}/video`, { ...inputs, tags }, { withCredentials: true });
+            setLoading(true)
+            const res = await api.post(`/video`, { ...inputs, tags });
             setOpen(false);
             navigate(`/video/${res.data._id}`)
         } catch (error) {
+
             console.log(error)
         }
+        setLoading(false);
     }
+
+    
 
     return (
         <Container>
@@ -160,11 +188,11 @@ const Upload = ({ setOpen }) => {
                     />
                 )}
 
-                <Input type="text" name="title" placeholder='Title' onChange={handleChange} />
+                <Input type="text" name="title" placeholder='Title' onChange={handleChange} required />
 
-                <Desc type="text" name="desc" rows="8" placeholder='Description' onChange={handleChange} />
+                <Desc type="text" name="desc" rows="8" placeholder='Description' onChange={handleChange} required />
 
-                <Input type="text" placeholder='Separate the tags with commas.' onChange={handleTags} />
+                <Input type="text" placeholder='Separate the tags with commas.' onChange={handleTags} required />
 
                 <Label>Thumbnail:</Label>
 
@@ -178,7 +206,7 @@ const Upload = ({ setOpen }) => {
                     />
                 )}
 
-                <Button onClick={handleUpload} disabled={imgPerc !==100 && videoPerc!==100 }>Upload</Button>
+                <Button onClick={handleUpload} disabled={(readyImg || readyVid )}>{loading ? "Uploading":"Upload"}</Button>
 
             </Wpapper>
         </Container>

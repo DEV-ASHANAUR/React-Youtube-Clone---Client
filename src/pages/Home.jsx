@@ -24,6 +24,16 @@ const Loading = styled.div`
 `
 const Home = ({type}) => {
   const BaseUrl = 'http://localhost:8000/api';
+  const api = axios.create({
+    baseURL: BaseUrl,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Cache: "no-cache",
+    },
+    withCredentials: true,  // <=== add here
+    timeout: 60000
+  })
   const [videos,setVideos] = useState([]);
   const [loading,setLoading] = useState(false);
 
@@ -31,7 +41,7 @@ const Home = ({type}) => {
     const fetchVideos = async () =>{
       setLoading(true);
       try {
-        const res = await axios.get(`${BaseUrl}/video/${type}`,{withCredentials:true});
+        const res = await api.get(`/video/${type}`);
         // console.log(res.data);
         setVideos(res.data);
       } catch (error) {

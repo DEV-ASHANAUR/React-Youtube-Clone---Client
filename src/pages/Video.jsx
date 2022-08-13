@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components';
 import avater from '../img/user.png';
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
@@ -8,16 +8,14 @@ import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
 import Comments from '../components/Comments';
-import {useDispatch,useSelector} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
 import axios from 'axios';
-import { dislike, fetchFailure, fetchSuccess, like } from '../redux/videoSlice';
+import { dislike, fetchFailure, fetchStart, fetchSuccess, like } from '../redux/videoSlice';
 import { format } from 'timeago.js';
 import Recommendation from '../components/Recommendation';
 import { subscription } from '../redux/userSlice';
-import {toast,ToastContainer} from 'react-toastify';
-import { async } from '@firebase/util';
+import { toast, ToastContainer } from 'react-toastify';
 
 const Container = styled.div`
     display:flex;
@@ -46,15 +44,6 @@ const Details = styled.div`
     justify-content: space-between;
     position: relative;
 `;
-// const Popup = styled.div`
-//     max-width: 100px;
-//     padding: 10px;
-//     border-radius: 10px;
-//     background-color: #4e4e4e;
-//     position: absolute;
-//     bottom: -25%;
-//     left:55%;
-// `
 const Info = styled.span`
     color: ${({ theme }) => theme.textSoft};
 `;
@@ -136,38 +125,31 @@ const VideoFrame = styled.video`
 
 const Video = () => {
     const BaseUrl = 'http://localhost:8000/api';
+    //axios setting
     const api = axios.create({
         baseURL: BaseUrl,
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Cache: "no-cache",
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Cache: "no-cache",
         },
         withCredentials: true,  // <=== add here
         timeout: 60000
-      })
+    })
     const dispatch = useDispatch();
     const {currentUser} = useSelector((state)=>state.user);
     const {currentVideo} = useSelector((state)=>state.video);
     const path = useLocation().pathname.split("/")[2];
-
     const [channel,setChannel] = useState({});
-
-    const handleSub = async() =>{
-        if(currentUser){
-            currentUser.subscribedUsers.includes(channel._id)? await api.put(`/users/unsub/${channel._id}`): await api.put(`/users/sub/${channel._id}`);
-            dispatch(subscription(channel._id));
-            fetchData();
-        }else{
-            toast.warn("Please Login for Subscribe!")
-        }
-    }
-
-    useEffect(()=>{
+    
+    //useEffect
+    useEffect(() => {
         fetchData();
         addView();
-    },[path,dispatch]);
+    }, [path]);
 
+   
+    //adding vide view
     const addView = async() =>{
         try {
             await api.put(`/video/view/${path}`);
@@ -178,9 +160,9 @@ const Video = () => {
 
     const fetchData = async()=>{
         try {
-            const videoRes = await axios.get(`${BaseUrl}/video/find/${path}`,{withCredentials:true});
-
-            const channelRes = await axios.get(`${BaseUrl}/users/find/${videoRes.data.userId}`,{withCredentials:true});
+            const videoRes = await api.get(`/video/find/${path}`);
+            // console.log("videoRes",videoRes);
+            const channelRes = await api.get(`/users/find/${videoRes.data.userId}`);
 
             setChannel(channelRes.data);
 
@@ -209,6 +191,17 @@ const Video = () => {
         }
     }
 
+    //handle subscription
+    const handleSub = async() =>{
+        if(currentUser){
+            currentUser.subscribedUsers.includes(channel._id)? await api.put(`/users/unsub/${channel._id}`): await api.put(`/users/sub/${channel._id}`);
+            dispatch(subscription(channel._id));
+            // fetchData();
+        }else{
+            toast.warn("Please Login for Subscribe!")
+        }
+    }
+
 
     return (
         <Container>
@@ -218,19 +211,19 @@ const Video = () => {
                 </VideoWrapper>
                 <Title>{currentVideo?.title}</Title>
                 <Details>
-                    <Info>{currentVideo.views} views • {format(currentVideo.createdAt)}</Info>
+                    <Info>{currentVideo?.views} views • {format(currentVideo?.createdAt)}</Info>
                     <Buttons>
                         <Button onClick={handleLike}>
-                            {currentVideo.likes?.includes(currentUser?._id)?(
+                            {currentVideo?.likes?.includes(currentUser?._id)?(
                                 <ThumbUpIcon />
                             ):(
                                 <ThumbUpOutlinedIcon /> 
                             )}
                             
-                            {currentVideo.likes?.length}
+                            {currentVideo?.likes?.length}
                         </Button>
                         <Button onClick={handleDisLike}>
-                            {currentVideo.dislikes?.includes(currentUser?._id)?(
+                            {currentVideo?.dislikes?.includes(currentUser?._id)?(
                                 <ThumbDownIcon />
                             ):(
                                 <ThumbDownOffAltOutlinedIcon />
@@ -251,9 +244,9 @@ const Video = () => {
                         <Image src={channel.img?channel.img:avater} />
                         <ChannelDetail>
                             <ChannelName>{channel.name}</ChannelName>
-                            <ChannelCounter>{channel.subscribers} subscribers</ChannelCounter>
+                            <ChannelCounter>{channel?.subscribers} subscribers</ChannelCounter>
                             <Description>
-                                {currentVideo.desc}
+                                {currentVideo?.desc}
                             </Description>
                         </ChannelDetail>
                     </ChannelInfo>
@@ -268,12 +261,11 @@ const Video = () => {
                             </Subscribe>
                         )
                     }
-                    {/* <Popup>Please Login For - like commennt and subscribe</Popup> */}
                 </Channel>
                 <Hr />
-                <Comments videoId={currentVideo._id} />
+                <Comments videoId={currentVideo?._id} />
             </Content>
-            <Recommendation tags={currentVideo.tags} />
+            <Recommendation tags={currentVideo?.tags} />
             <ToastContainer />
         </Container>
     )

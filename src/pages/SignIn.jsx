@@ -64,6 +64,16 @@ const Link = styled.span`
 
 const SignIn = () => {
   const BaseUrl = 'http://localhost:8000/api';
+  const api = axios.create({
+    baseURL: BaseUrl,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Cache: "no-cache",
+    },
+    withCredentials: true,  // <=== add here
+    timeout: 60000
+  })
 
   const { loading, error } = useSelector((state) => state.user);
 
@@ -86,7 +96,7 @@ const SignIn = () => {
     if (email && password) {
       dispatch(loginStart());
       try {
-        const res = await axios.post(`${BaseUrl}/auth/signin`, { email, password },{withCredentials:true});
+        const res = await api.post(`/auth/signin`, { email, password });
         // console.log(res);
         dispatch(loginSuccess(res.data));
         navigate("/");
@@ -104,11 +114,11 @@ const SignIn = () => {
     dispatch(loginStart());
     signInWithPopup(auth, provider).then((result) => {
       console.log(result);
-      axios.post(`${BaseUrl}/auth/google`, {
+      api.post(`/auth/google`, {
         name: result.user.displayName,
         email: result.user.email,
         img: result.user.photoURL,
-      },{withCredentials:true}).then((res)=>{
+      }).then((res)=>{
         dispatch(loginSuccess(res.data));
         navigate("/");
       }).catch((error)=>{
@@ -125,7 +135,7 @@ const SignIn = () => {
     if (name && email && password) {
       dispatch(loginStart());
       try {
-        const res = await axios.post(`${BaseUrl}/auth/signup`, { name, email, password },{withCredentials:true});
+        const res = await api.post(`/auth/signup`, { name, email, password });
         dispatch(loginSuccess(res.data));
         navigate("/");
       } catch (error) {
